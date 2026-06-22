@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>给Ni · 365天纪念</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;500&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+
+  :root {
+    --main1: #E30348;
+    --main2: #E6E6E6;
+    --aux1: #00A693;
+    --aux2: #D9193B;
+    --aux3: #2E5A3C;
+    --aux4: #2C3E6B;
+    --text: #E30348;
+    --text-light: #D9193B;
+    --gold: #00A693;
+  }
+
+  body {
+    font-family: 'Noto Serif SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', serif;
+    background: var(--main2);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes floatHeart {
+    0% { opacity: 0; transform: translateY(0) translateX(0) rotate(0deg) scale(0.8); }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.15; }
+    100% { opacity: 0; transform: translateY(-100vh) translateX(30px) rotate(15deg) scale(0.5); }
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
+  }
+  @keyframes gentlePulse {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.08); opacity: 0.7; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .hearts-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .heart-float {
+    position: absolute;
+    bottom: -20px;
+    opacity: 0;
+    animation: floatHeart linear infinite;
+    font-size: 14px;
+    color: var(--main1);
+  }
+
+  .page {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    z-index: 1;
+  }
+  .page.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .entry-page {
+    background: var(--main2);
+    padding: 40px 24px;
+    padding-top: calc(env(safe-area-inset-top) + 40px);
+    text-align: center;
+  }
+  .entry-page::before {
+    content: '';
+    position: fixed;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 20%, rgba(227,3,72,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(0,166,147,0.1) 0%, transparent 50%);
+    animation: breathe 6s ease-in-out infinite;
+    z-index: 0;
+  }
+  .entry-content {
+    position: relative;
+    z-index: 1;
+    max-width: 400px;
+    width: 100%;
+  }
+  .date-badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    animation: fadeIn 1s ease 0.3s both;
+    font-weight: 300;
+  }
+  .entry-title {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 28px;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 24px;
+    animation: fadeInUp 1s ease 0.5s both;
+    font-weight: 300;
+  }
+  .entry-subtitle {
+    font-size: 14px;
+    line-height: 2.2;
+    color: var(--text-light);
+    margin-bottom: 20px;
+    animation: fadeInUp 1s ease 0.8s both;
+    font-weight: 200;
+    letter-spacing: 1px;
+  }
+  .entry-days {
+    font-size: 64px;
+    font-weight: 200;
+    color: var(--main1);
+    margin: 20px 0;
+    animation: fadeInUp 1s ease 1s both;
+    line-height: 1;
+    position: relative;
+  }
+  .entry-days span {
+    font-size: 16px;
+    display: block;
+    color: var(--text-light);
+    margin-top: 8px;
+    font-weight: 300;
+  }
+  .entry-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--main1), transparent);
+    margin: 30px auto;
+    animation: fadeIn 1.2s ease 1.1s both;
+  }
+  .entry-quote {
+    font-size: 13px;
+    color: var(--text-light);
+    font-style: italic;
+    line-height: 2;
+    margin-bottom: 40px;
+    animation: fadeInUp 1s ease 1.2s both;
+    font-weight: 200;
+  }
+  .btn-start {
+    display: inline-block;
+    padding: 14px 48px;
+    min-height: 44px;
+    border: 1px solid var(--main1);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    animation: fadeInUp 1s ease 1.4s both;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  .btn-start::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(227,3,72,0.3), transparent);
+    transition: left 0.6s ease;
+  }
+  .btn-start:hover::before { left: 100%; }
+  .btn-start:active { transform: scale(0.97); }
+
+  .quiz-page {
+    background: var(--main2);
+    padding: 30px 20px;
+    padding-top: calc(env(safe-area-inset-top) + 30px);
+  }
+  .quiz-progress {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 40px;
+    animation: fadeIn 0.8s ease;
+  }
+  .progress-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--aux4);
+    transition: all 0.5s ease;
+  }
+  .progress-dot.active {
+    background: var(--main1);
+    box-shadow: 0 0 8px rgba(227,3,72,0.5);
+  }
+  .progress-dot.correct {
+    background: var(--aux1);
+  }
+  .quiz-card {
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+  }
+  .quiz-number {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    animation: fadeIn 0.5s ease;
+  }
+  .quiz-question {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 22px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 36px;
+    animation: fadeInUp 0.8s ease;
+    font-weight: 300;
+  }
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeInUp 0.8s ease 0.2s both;
+  }
+  .quiz-option {
+    padding: 16px 24px;
+    min-height: 44px;
+    border: 1px solid var(--aux4);
+    background: rgba(44,62,107,0.15);
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.4s ease;
+    font-family: 'Noto Serif SC', serif;
+    letter-spacing: 1px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .quiz-option:hover {
+    border-color: var(--main1);
+    background: rgba(227,3,72,0.1);
+  }
+  .quiz-option:active { transform: scale(0.98); }
+  .quiz-option.selected {
+    border-color: var(--main1);
+    background: rgba(227,3,72,0.15);
+  }
+  .quiz-option.correct-answer {
+    border-color: var(--aux1);
+    background: rgba(0,166,147,0.2);
+    animation: fadeInUp 0.5s ease;
+  }
+  .quiz-option.wrong-answer {
+    border-color: var(--aux2);
+    background: rgba(217,25,59,0.15);
+    animation: shake 0.4s ease;
+  }
+  .quiz-option .option-letter {
+    display: inline-block;
+    width: 24px;
+    text-align: center;
+    margin-right: 12px;
+    color: var(--gold);
+    font-size: 12px;
+  }
+  .btn-confirm {
+    margin-top: 30px;
+    padding: 12px 40px;
+    min-height: 44px;
+    border: 1px solid var(--main1);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    animation: fadeInUp 0.6s ease 0.4s both;
+    opacity: 0;
+    border-radius: 4px;
+  }
+  .btn-confirm.visible { opacity: 1; }
+  .btn-confirm:hover { background: rgba(227,3,72,0.1); }
+  .btn-confirm:active { transform: scale(0.97); }
+
+  .wrong-feedback {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(230,230,230,0.97);
+    z-index: 50;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .wrong-feedback.show { display: flex; }
+  .wrong-feedback .wrong-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+    animation: gentlePulse 2s ease-in-out infinite;
+  }
+  .wrong-feedback .wrong-text {
+    font-size: 15px;
+    color: var(--text-light);
+    line-height: 2;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 200;
+  }
+  .btn-retry {
+    padding: 12px 36px;
+    min-height: 44px;
+    border: 1px solid var(--main1);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    border-radius: 4px;
+  }
+  .btn-retry:hover { background: rgba(227,3,72,0.1); }
+
+  .celebration-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(230,230,230,0.98);
+    z-index: 60;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+  .celebration-overlay.show { display: flex; }
+  .celebration-overlay .celeb-text {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 16px;
+    animation: fadeInUp 0.8s ease;
+  }
+  .celebration-overlay .celeb-sub {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 2;
+    animation: fadeInUp 0.8s ease 0.3s both;
+    font-weight: 200;
+  }
+
+  .letter-page {
+    background: var(--main2);
+    padding: 40px 24px;
+    padding-top: calc(env(safe-area-inset-top) + 40px);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 40px);
+    text-align: center;
+  }
+  .letter-page::before {
+    content: '';
+    position: fixed;
+    top: -30%; right: -30%;
+    width: 80%; height: 80%;
+    background: radial-gradient(ellipse, rgba(227,3,72,0.15) 0%, transparent 70%);
+    animation: gentlePulse 5s ease-in-out infinite;
+    z-index: 0;
+  }
+  .letter-content {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    width: 100%;
+  }
+  .letter-envelope {
+    margin-bottom: 30px;
+    animation: fadeInUp 1s ease 0.3s both;
+  }
+  .letter-envelope .envelope-icon {
+    font-size: 48px;
+    opacity: 0.5;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .letter-header {
+    animation: fadeInUp 1s ease 0.6s both;
+  }
+  .letter-header .to-name {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 8px;
+    font-weight: 300;
+  }
+  .letter-header .date {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 30px;
+  }
+  .letter-body {
+    text-align: left;
+    animation: fadeInUp 1s ease 0.9s both;
+  }
+  .letter-line {
+    font-size: 14px;
+    line-height: 2.4;
+    color: var(--text-light);
+    margin-bottom: 6px;
+    font-weight: 200;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  .letter-line:nth-child(1) { animation-delay: 1.1s; }
+  .letter-line:nth-child(2) { animation-delay: 1.3s; }
+  .letter-line:nth-child(3) { animation-delay: 1.5s; }
+  .letter-line:nth-child(4) { animation-delay: 1.7s; }
+  .letter-line:nth-child(5) { animation-delay: 1.9s; }
+  .letter-line:nth-child(6) { animation-delay: 2.1s; }
+  .letter-line:nth-child(7) { animation-delay: 2.3s; }
+  .letter-sign {
+    text-align: right;
+    margin-top: 30px;
+    animation: fadeInUp 0.8s ease 2.5s both;
+  }
+  .letter-sign .signature {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 18px;
+    color: var(--text);
+    font-weight: 300;
+  }
+  .letter-sign .date-sign {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+  .letter-footer {
+    margin-top: 40px;
+    animation: fadeInUp 0.8s ease 2.7s both;
+  }
+  .letter-footer .hearts-emoji {
+    font-size: 20px;
+    letter-spacing: 8px;
+    opacity: 0;
+    animation: fadeIn 1s ease 3s both;
+  }
+  .letter-footer .restart-hint {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 16px;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeIn 1s ease 3.3s both;
+  }
+
+  @media (max-width: 360px) {
+    .entry-title { font-size: 24px; }
+    .quiz-question { font-size: 19px; }
+    .entry-days { font-size: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<div class="page entry-page active" id="entryPage">
+  <div class="entry-content">
+    <div class="date-badge">July 12, 2026</div>
+    <h1 class="entry-title">给 Ni 的一封小信</h1>
+    <p class="entry-subtitle">
+      今天的日期很特别<br>
+      想和你玩一个小小的游戏
+    </p>
+    <div class="entry-days">
+      365
+      <span>天 · 专属心意</span>
+    </div>
+    <div class="entry-divider"></div>
+    <p class="entry-quote">
+      「你是我所有温柔的理由，<br>
+       今天想用五道小题，<br>
+       重新确认一下——<br>
+       你有多了解我。」
+    </p>
+    <button class="btn-start" onclick="startQuiz()">开始作答</button>
+  </div>
+</div>
+
+<div class="page quiz-page" id="quizPage">
+  <div class="quiz-progress" id="quizProgress">
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+  </div>
+  <div class="quiz-card">
+    <div class="quiz-number" id="quizNumber">Question 01 / 05</div>
+    <div class="quiz-question" id="quizQuestion"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <button class="btn-confirm" id="btnConfirm" onclick="confirmAnswer()" style="opacity:0;">确认答案</button>
+  </div>
+</div>
+
+<div class="wrong-feedback" id="wrongFeedback">
+  <div class="wrong-icon">🌸</div>
+  <div class="wrong-text">
+    答错啦～<br>
+    没关系，再试一次吧<br>
+    <small>慢慢想，不着急</small>
+  </div>
+  <button class="btn-retry" onclick="retryQuestion()">重新作答</button>
+</div>
+
+<div class="celebration-overlay" id="celebrationOverlay">
+  <div class="celeb-text">🎉 全部答对啦 🎉</div>
+  <div class="celeb-sub">你真的很了解我<br>接下来 是给你的惊喜</div>
+</div>
+
+<div class="page letter-page" id="letterPage">
+  <div class="letter-content">
+    <div class="letter-envelope">
+      <span class="envelope-icon">💌</span>
+    </div>
+    <div class="letter-header">
+      <div class="to-name">亲爱的Ni</div>
+      <div class="date">2026.7.12 · 相恋第365天</div>
+    </div>
+    <div class="letter-body">
+      <div class="letter-line">今天是我们在一起的第365天。</div>
+      <div class="letter-line">365，是一个刚好能被2整除的数字，</div>
+      <div class="letter-line">就像你，刚好是我最想留住的温柔。</div>
+      <div class="letter-line"></div>
+      <div class="letter-line">你大概不知道，</div>
+      <div class="letter-line">每次想起你，嘴角都会不自觉地上扬。</div>
+      <div class="letter-line">那些你忽略的小习惯、</div>
+      <div class="letter-line">你觉得自己说漏嘴的小细节，</div>
+      <div class="letter-line">其实我都悄悄记在了心里。</div>
+      <div class="letter-line"></div>
+      <div class="letter-line">谢谢你，出现在我的生命里。</div>
+      <div class="letter-line">未来的每一天，都想继续和你一起度过。</div>
+      <div class="letter-line"></div>
+      <div class="letter-line">愿我们，永远温柔，永远甜蜜。</div>
+    </div>
+    <div class="letter-sign">
+      <div class="signature">—— 杭州毅风</div>
+      <div class="date-sign">2026.7.12</div>
+    </div>
+    <div class="letter-footer">
+      <div class="hearts-emoji">♡ ♡ ♡</div>
+      <div class="restart-hint">长按可重新开始</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "我的声音秘密基地是哪里，发生过什么有趣的事？",
+    options: [
+      "探索房，酣睡主理人开课：《如何在酒店优雅地薅迷你吧》",
+      "套房，酒店CEO现场发布首支个人单曲《天生出格》",
+      "FloLab声音实验室，30+位杭州本地播客齐聚，来了一场",
+      "大堂，举办了\"钱塘江潮声模仿大赛\"，冠军抱走一年免房券"
+    ],
+    answer: 2
+  },
+  {
+    q: "在这里睡前一定会做的事是什么？",
+    options: [
+      "刷手机到凌晨",
+      "一定要总经理说一声晚安",
+      "享用毅风的晚安甜汤，戴上蒸汽眼罩美美入睡",
+      "看一小会儿书"
+    ],
+    answer: 2
+  },
+  {
+    q: "住客疯狂copy的当日人玩法？",
+    options: [
+      "乘坐520+1314浪漫公交，再10分钟登顶宝石山，get俯瞰西湖的宝藏机位",
+      "凌晨三点去西湖边，和野生松鼠进行灵魂对话",
+      "跟着总经理冯伟在他家楼下吃完拌面",
+      "在钱塘江里体验\"沉浸式溯溪\"，感受天然江景SPA"
+    ],
+    answer: 0
+  },
+  {
+    q: "一进来就闻得到的品牌记忆？",
+    options: [
+      "愈木清晖——以木质调纯天然植物精油为基底的原创香氛",
+      "葱包桧儿味——把杭州早餐灵魂做成嗅觉体验",
+      "钱塘潮风——100%还原江风咸湿的自然主义香氛",
+      "彩虹酸奶味——健康到让人瞬间自律的饮食主题香氛"
+    ],
+    answer: 0
+  },
+  {
+    q: "过去一年里的出格现场？",
+    options: [
+      "毅起听风·交换春天躺平音乐会，杭州本土乐队主唱灰鱼空降",
+      "周年庆举办24小时不睡挑战，赢家获得终身免房券",
+      "住客集体请愿，要求把大堂香氛愈木清晖做成香水上市",
+      "Flo Lab播客间深夜转型情感热线，专接住客失恋咨询电话"
+    ],
+    answer: 0
+  }
+];
+
+let currentQ = 0;
+let selectedOption = -1;
+
+function createHearts() {
+  const container = document.getElementById('heartsBg');
+  const hearts = ['♡', '♥', '✿', '❀', ''];
+  for (let i = 0; i < 12; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'heart-float';
+    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    heart.style.left = Math.random() * 100 + '%';
+    heart.style.fontSize = (10 + Math.random() * 12) + 'px';
+    heart.style.animationDuration = (15 + Math.random() * 20) + 's';
+    heart.style.animationDelay = (Math.random() * 20) + 's';
+    heart.style.opacity = '0';
+    container.appendChild(heart);
+  }
+}
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  setTimeout(() => {
+    document.getElementById(pageId).classList.add('active');
+  }, 300);
+}
+
+function startQuiz() {
+  currentQ = 0;
+  selectedOption = -1;
+  showPage('quizPage');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  selectedOption = -1;
+
+  const dots = document.querySelectorAll('.progress-dot');
+  dots.forEach((dot, i) => {
+    dot.className = 'progress-dot';
+    if (i < currentQ) dot.classList.add('correct');
+    if (i === currentQ) dot.classList.add('active');
+  });
+
+  document.getElementById('quizNumber').textContent =
+    `Question 0${currentQ + 1} / 05`;
+
+  const qEl = document.getElementById('quizQuestion');
+  qEl.style.opacity = '0';
+  qEl.style.transform = 'translateY(10px)';
+  setTimeout(() => {
+    qEl.textContent = q.q;
+    qEl.style.transition = 'all 0.6s ease';
+    qEl.style.opacity = '1';
+    qEl.style.transform = 'translateY(0)';
+  }, 200);
+
+  const optContainer = document.getElementById('quizOptions');
+  optContainer.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-option';
+    div.innerHTML = `<span class="option-letter">${letters[i]}</span>${opt}`;
+    div.style.opacity = '0';
+    div.style.transform = 'translateY(10px)';
+    
+    div.addEventListener('click', function() {
+      selectOption(i, this);
+    });
+    
+    optContainer.appendChild(div);
+
+    setTimeout(() => {
+      div.style.transition = 'all 0.5s ease';
+      div.style.opacity = '1';
+      div.style.transform = 'translateY(0)';
+    }, 100 + i * 80);
+  });
+
+  const btn = document.getElementById('btnConfirm');
+  btn.style.opacity = '0';
+  btn.classList.remove('visible');
+}
+
+function selectOption(index, el) {
+  document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+  el.classList.add('selected');
+  selectedOption = index;
+
+  const btn = document.getElementById('btnConfirm');
+  btn.style.opacity = '1';
+  btn.classList.add('visible');
+}
+
+function confirmAnswer() {
+  if (selectedOption === -1) return;
+
+  const q = questions[currentQ];
+  const btn = document.getElementById('btnConfirm');
+
+  if (selectedOption === q.answer) {
+    btn.style.opacity = '0';
+    btn.classList.remove('visible');
+
+    const options = document.querySelectorAll('.quiz-option');
+    options[q.answer].classList.add('correct-answer');
+
+    setTimeout(() => {
+      currentQ++;
+      if (currentQ >= questions.length) {
+        showCelebration();
+      } else {
+        renderQuestion();
+      }
+    }, 800);
+  } else {
+    btn.style.opacity = '0';
+    btn.classList.remove('visible');
+
+    const options = document.querySelectorAll('.quiz-option');
+    options[selectedOption].classList.add('wrong-answer');
+
+    setTimeout(() => {
+      showWrongFeedback();
+    }, 500);
+  }
+}
+
+function showWrongFeedback() {
+  document.getElementById('wrongFeedback').classList.add('show');
+}
+
+function retryQuestion() {
+  document.getElementById('wrongFeedback').classList.remove('show');
+  renderQuestion();
+}
+
+function showCelebration() {
+  const overlay = document.getElementById('celebrationOverlay');
+  overlay.classList.add('show');
+
+  const container = document.getElementById('heartsBg');
+  for (let i = 0; i < 20; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'heart-float';
+    heart.textContent = ['♡', '♥', '✿'][Math.floor(Math.random() * 3)];
+    heart.style.left = Math.random() * 100 + '%';
+    heart.style.fontSize = (12 + Math.random() * 14) + 'px';
+    heart.style.animationDuration = (8 + Math.random() * 10) + 's';
+    heart.style.animationDelay = (Math.random() * 5) + 's';
+    heart.style.color = ['#E30348', '#00A693', '#E6E6E6'][Math.floor(Math.random() * 3)];
+    container.appendChild(heart);
+  }
+
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    showPage('letterPage');
+  }, 2500);
+}
+
+let pressTimer;
+document.addEventListener('DOMContentLoaded', () => {
+  createHearts();
+
+  const letterPage = document.getElementById('letterPage');
+  letterPage.addEventListener('touchstart', (e) => {
+    pressTimer = setTimeout(() => {
+      if (confirm('要重新开始吗？')) {
+        location.reload();
+      }
+    }, 2000);
+  });
+  letterPage.addEventListener('touchend', () => clearTimeout(pressTimer));
+  letterPage.addEventListener('touchmove', () => clearTimeout(pressTimer));
+});
+</script>
+</body>
+</html>
